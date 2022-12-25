@@ -47,6 +47,8 @@ export const register = async (req, res) => {
 };
 
 /* Logging In */
+// basic way of using Authentication
+
 export const login = async (req, res) => {
   try {
     // grabbing user email and password
