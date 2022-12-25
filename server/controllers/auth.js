@@ -45,3 +45,28 @@ export const register = async (req, res) => {
     register.status(500).json({ error: err.message });
   }
 };
+
+/* Logging In */
+export const login = async (req, res) => {
+  try {
+    // grabbing user email and password
+    const { email, password } = req.body;
+    // grabbing all info associated with this email
+    const user = await User.findOne({ email: email });
+    // if user is not registered, throw an error
+    if (!user) return res.status(400).json({ msg: "User does not exist" });
+
+    // verifying password
+    const isMatch = await bcrypt.compare(password, user.password);
+    // wrong password, throw an error
+    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+
+    // if email and password is successful, give a token to the user
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    // delete password so it does not get sent to Front End
+    delete user.password;
+    res.status(200).json({ token, user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
